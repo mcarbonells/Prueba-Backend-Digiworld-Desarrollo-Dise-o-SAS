@@ -1,15 +1,11 @@
-from flask import Flask, request
+from distutils.log import debug
+from flask import Flask, request, jsonify
 from flask_mysqldb import MySQL
-from flask import jsonify
 from config import config
 
 app = Flask(__name__)
 
 conexion = MySQL(app)
-
-if __name__ == '__main__':
-    app.config.from_object(config['development'])
-    app.run()
     
 @app.route('/')
 def home():
@@ -19,7 +15,7 @@ def home():
 def create_task():
     try:
         cursor = conexion.connection.cursor()
-        sql = "INSERT INTO task (IDT, NAME, DESCRIPTION, SEND_DATE) VALUES ('{0}', '{1}', '{2}')".format(request.json['NAME'], request.json['DESCRIPTION'], request.json['SEND_DATE'])
+        sql = "INSERT INTO task (NAME, DESCRIPTION, SEND_DATE) VALUES ('{0}', '{1}', '{2}')".format(request.json['NAME'], request.json['DESCRIPTION'], request.json['SEND_DATE'])
         cursor.execute(sql)
         conexion.connection.commit()
         
@@ -36,13 +32,13 @@ def update_task(id):
         cursor.execute(sql)
         conexion.connection.commit()
         
-        response = {'data': request.json, 'id': id, 'menssage': 'Tarea Creada'}
+        response = {'data': request.json, 'id': id, 'menssage': 'Tarea Actualizada'}
         return jsonify(response)
     except Exception as ex:
         return jsonify({'menssage': 'error'})
 
 @app.route('/api/delete_task/<id>', methods = ['DELETE'])
-def delete_task():
+def delete_task(id):
     try:
         cursor = conexion.connection.cursor()
         sql = "DELETE FROM task  WHERE IDT = '{0}'".format(id)
@@ -62,12 +58,13 @@ def get_task(id):
         cursor.execute(sql)
         datos = cursor.fetchall()
         if  datos != None:
-            task = {'IDT': datos[0], 'NAME': datos[1],' DESCRIPTION': datos[2], 'SEND_DATE': datos[3]}
+            task = {'IDT': datos[0][0], 'NAME': datos[0][1],' DESCRIPTION': datos[0][2], 'SEND_DATE': datos[0][3]}
             response = {'data': task, 'menssage': 'success'}
         else:
             response = {'menssage': 'Tarea no encontrada'}
         return jsonify(response)
     except Exception as ex:
+        print(ex)
         return jsonify({'menssage': 'error'})
 
 @app.route('/api/get_all_task', methods = ['GET'])
@@ -85,4 +82,8 @@ def get_all_task():
         return jsonify(response)
     except Exception as ex:
         return jsonify({'menssage': 'error'})
+        
+if __name__ == '__main__':
+    app.config.from_object(config['development'])
+    app.run(debug = True)
     
