@@ -33,13 +33,9 @@ body raw tipo JSON:
 }
 
 
-
-
 **Ver todas las tareas**
 
 GET http://127.0.0.1:5000/api/get_all_task (o http://localhost:5000/api/get_all_task)
-
-
 
 
 **Ver una tarea**
@@ -47,8 +43,6 @@ GET http://127.0.0.1:5000/api/get_all_task (o http://localhost:5000/api/get_all_
 GET http://127.0.0.1:5000/api/get_task/1 (o http://localhost:5000/api/get_task/1)
 
 GET http://127.0.0.1:5000/api/get_task/2 (o http://localhost:5000/api/get_task/2)
-
-
 
 
 **Update una tarea**
@@ -72,15 +66,11 @@ body raw tipo JSON:
 }
 
 
-
-
 **Eliminar una tarea**
 
 DELETE http://127.0.0.1:5000/api/delete_task/1 (o http://localhost:5000/api/delete_task/1)
 
 DELETE http://127.0.0.1:5000/api/delete_task/2 (o http://localhost:5000/api/delete_task/2)
-
-
 
 
 ## Login Registro y Validación token
@@ -98,8 +88,6 @@ body raw tipo JSON:
 }
 
 
-
-
 **LOGIN**
 
 POST http://127.0.0.1:5000/login (o  http://localhost:5000/login)
@@ -111,7 +99,6 @@ body raw tipo JSON:
 }
 
 
-
 **VERIFY TOKEN**
 
 GET http://127.0.0.1:5000/verify_token (o  http://localhost:5000/verify_token)
@@ -119,4 +106,6 @@ GET http://127.0.0.1:5000/verify_token (o  http://localhost:5000/verify_token)
 Authorization BearerToken Token del login
 
 
+## PostMan
+https://www.getpostman.com/collections/5fe7e2d7de3785c324ba
 
