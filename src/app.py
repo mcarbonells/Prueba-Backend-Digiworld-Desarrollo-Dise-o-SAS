@@ -2,6 +2,9 @@ from distutils.log import debug
 from flask import Flask, request, jsonify
 from flask_mysqldb import MySQL
 from config import config
+from jwtFuntion import write_token, val_token
+import bcrypt
+from re import split
 
 app = Flask(__name__)
 
@@ -9,8 +12,9 @@ conexion = MySQL(app)
     
 @app.route('/')
 def home():
-    return 'HOLA MUNDO'
+    return 'Pagina Principal'
 
+#CRUD TASK
 @app.route('/api/create_task', methods = ['POST'])
 def create_task():
     try:
@@ -64,7 +68,6 @@ def get_task(id):
             response = {'menssage': 'Tarea no encontrada'}
         return jsonify(response)
     except Exception as ex:
-        print(ex)
         return jsonify({'menssage': 'error'})
 
 @app.route('/api/get_all_task', methods = ['GET'])
@@ -82,6 +85,65 @@ def get_all_task():
         return jsonify(response)
     except Exception as ex:
         return jsonify({'menssage': 'error'})
+    
+
+#Login
+@app.route('/login', methods = ["POST"])
+def login():
+    username = request.json['USERNAME']
+    password = request.json['PASSWORD']
+    check = password.encode("utf-8")
+    
+    try:
+        cursor = conexion.connection.cursor()
+        sql = "SELECT USERNAME, PASSWORD FROM users WHERE USERNAME = '{0}'".format(username)
+        cursor.execute(sql)
+        datos = cursor.fetchall()
+        if  datos != None:
+            passworddb = datos[0][1]
+            passworddb = passworddb.encode("utf-8")
+            if  bcrypt.checkpw(check, passworddb):
+                token = write_token(data=request.json)
+                response = {'token': token.decode("utf-8"), 'menssage': 'Usuario exitosamente logeado'}
+            else:
+              response = {'menssage': 'Contraseña incorrecta'}
+              response.status_code = 404 
+        else:
+            response = {'menssage': 'Usuario no encontrado'}
+            response.status_code = 404
+        return jsonify(response)
+    except Exception as ex:
+        return jsonify({'menssage': 'error'})
+    
+#VALIDATE TOKEN
+@app.route('/verify_token', methods = ["GET"])
+def verify_token():
+    token = request.headers['Authorization'].split(" ")[1]
+    return val_token(token, output=True)
+    
+  
+#REGISTRO
+@app.route('/register', methods = ["POST"])
+def register():
+    password = request.json['PASSWORD']
+    password = password.encode("utf-8")
+    encoded = bcrypt.hashpw(password, bcrypt.gensalt(10)) 
+    encoded = encoded.decode("utf-8")
+    
+    try:
+        cursor = conexion.connection.cursor()
+        sql = "INSERT INTO users (NAME, LASTNAME, USERNAME, EMAIL, PASSWORD) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}')".format(
+            request.json['NAME'], request.json['LASTNAME'], request.json['USERNAME'], request.json['EMAIL'], encoded)
+        cursor.execute(sql)
+        conexion.connection.commit()
+        
+        request.json['PASSWORD'] = str(encoded)
+        
+        response = {'data': request.json, 'menssage': 'Registro Exitoso'}
+        return jsonify(response)
+    except Exception as ex:
+        return jsonify({'menssage': 'error'})
+
         
 if __name__ == '__main__':
     app.config.from_object(config['development'])
