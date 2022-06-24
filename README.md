@@ -3,7 +3,7 @@
 La base de datos usada esta descrita en el archivo llamado db. 
 
 ## Prueba del CRUD sobre la tabla TASK
-###Crear nueva tarea
+##Crear nueva tarea
 POST http://127.0.0.1:5000/api/create_task (o http://localhost:5000/api/create_task)
 
 body raw tipo JSON:
@@ -25,10 +25,10 @@ body raw tipo JSON:
   "SEND_DATE": "2022-07-15"
 }
 
-###Ver todas las tareas
+##Ver todas las tareas
 GET http://127.0.0.1:5000/api/get_all_task (o http://localhost:5000/api/get_all_task)
 
-###Ver una tarea
+##Ver una tarea
 GET http://127.0.0.1:5000/api/get_task/1 (o http://localhost:5000/api/get_task/1)
 GET http://127.0.0.1:5000/api/get_task/2 (o http://localhost:5000/api/get_task/2)
 
